@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ramo de flores amarillas</title>
+<style>
+:root{--bg:#0f2f27;--paper:#efe6c8;--yellow:#ffc928;--deep:#f29d0d;--leaf:#2f7d4f}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center;
+  background:radial-gradient(circle at 50% 35%,#1d5443,var(--bg) 70%);color:#fff6d6;
+  font-family:Georgia,"Iowan Old Style",serif}
+main{max-width:520px;width:100%}
+svg{width:100%;height:auto;max-height:68vh;display:block;margin:0 auto}
+h1{font-size:clamp(1.6rem,5vw,2.4rem);font-weight:400;margin:8px 0 6px}
+p{margin:0;opacity:.85;font-size:1.05rem}
+.stem{fill:none;stroke:var(--leaf);stroke-width:4;stroke-linecap:round;
+  stroke-dasharray:1;stroke-dashoffset:1;animation:grow 1.2s ease-out forwards}
+@keyframes grow{to{stroke-dashoffset:0}}
+.flower{transform-box:fill-box;transform-origin:center;transform:scale(0);
+  animation:bloom .9s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes bloom{to{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){
+  .stem,.flower{animation-duration:.01s;animation-delay:0s!important}
+}
+</style>
+</head>
+<body>
+<main>
+  <svg viewBox="0 0 400 500" role="img" aria-label="Ramo de flores amarillas">
+    <g id="stems"></g>
+    <g id="leaves" fill="#2f7d4f">
+      <ellipse cx="150" cy="330" rx="26" ry="10" transform="rotate(-35 150 330)"/>
+      <ellipse cx="252" cy="325" rx="26" ry="10" transform="rotate(35 252 325)"/>
+      <ellipse cx="175" cy="300" rx="22" ry="8" transform="rotate(-60 175 300)"/>
+      <ellipse cx="228" cy="298" rx="22" ry="8" transform="rotate(60 228 298)"/>
+    </g>
+    <g id="flowers"></g>
+    <!-- papel de envolver -->
+    <polygon points="95,300 305,300 215,485 185,485" fill="#efe6c8"/>
+    <polygon points="95,300 200,300 190,485 185,485" fill="#e2d7b0"/>
+    <polygon points="137,385 263,385 255,400 145,400" fill="#f29d0d"/>
+    <ellipse cx="184" cy="392" rx="20" ry="10" fill="#ffc928"/>
+    <ellipse cx="216" cy="392" rx="20" ry="10" fill="#ffc928"/>
+    <circle cx="200" cy="392" r="7" fill="#f29d0d"/>
+  </svg>
+  <h1 id="titulo">Feliz 21 de septiembre</h1>
+  <p id="dedicatoria">Un ramo de flores amarillas para ti</p>
+</main>
+<script>
+// Edita estos textos a tu gusto
+document.getElementById("titulo").textContent = "Feliz 21 de septiembre";
+document.getElementById("dedicatoria").textContent = "Un ramo de flores amarillas para ti";
+
+const NS = "http://www.w3.org/2000/svg";
+const el = (name, attrs, parent) => {
+  const n = document.createElementNS(NS, name);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+};
+
+// [x, y, radio, giro]
+const flores = [
+  [200, 105, 44, 0], [128, 160, 37, 12], [274, 158, 38, 8],
+  [92, 235, 32, 20], [308, 240, 33, 4], [160, 228, 35, 15],
+  [242, 224, 33, 10], [200, 292, 30, 0]
+];
+
+const stems = document.getElementById("stems");
+const holder = document.getElementById("flowers");
+
+flores.forEach(([x, y, R, giro], i) => {
+  const delay = 0.15 * i;
+  // tallo
+  const cx = 200 + (x - 200) * 0.25, cy = (420 + y) / 2;
+  el("path", {
+    class: "stem", pathLength: 1,
+    d: `M200 420 Q${cx} ${cy} ${x} ${y}`,
+    style: `animation-delay:${delay}s`
+  }, stems);
+
+  // flor
+  const pos = el("g", { transform: `translate(${x} ${y}) rotate(${giro})` }, holder);
+  const g = el("g", { class: "flower", style: `animation-delay:${delay + 1}s` }, pos);
+  const n = 13;
+  [["#f29d0d", 0.5, 1.0], ["#ffc928", 0, 0.88]].forEach(([color, offset, size]) => {
+    for (let k = 0; k < n; k++) {
+      el("ellipse", {
+        cx: 0, cy: -R * 0.62 * size, rx: R * 0.2 * size, ry: R * 0.42 * size,
+        fill: color, transform: `rotate(${(k + offset) * 360 / n})`
+      }, g);
+    }
+  });
+  el("circle", { r: R * 0.3, fill: "#7a4a12" }, g);
+  for (let k = 0; k < 8; k++) {
+    const a = k * Math.PI / 4;
+    el("circle", {
+      cx: Math.cos(a) * R * 0.17, cy: Math.sin(a) * R * 0.17,
+      r: R * 0.035, fill: "#3f2508"
+    }, g);
+  }
+});
+</script>
+</body>
+</html>
